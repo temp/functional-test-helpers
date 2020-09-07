@@ -47,4 +47,25 @@ final class MockResponseBuilderTest extends TestCase
 
         self::assertSame(implode(PHP_EOL, $parts), (string) $builder);
     }
+
+    public function testConvertableToStringWithHeaders(): void
+    {
+        $builder = (new MockResponseBuilder())
+            ->code(200)
+            ->contentType('image/gif')
+            ->contentLength(6)
+            ->etag('foobar')
+            ->content('barbaz');
+
+        $parts = [
+            'HTTP Code: 200',
+            'Content-Type: image/gif',
+            'Content-Length: 6',
+            'Etag: foobar',
+            '',
+            'barbaz',
+        ];
+
+        self::assertSame(implode(PHP_EOL, $parts), (string) $builder);
+    }
 }

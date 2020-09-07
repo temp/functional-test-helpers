@@ -37,12 +37,33 @@ final class MockResponseBuilder
         return $this;
     }
 
+    public function contentType(string $contentType): self
+    {
+        $this->header('Content-Type', $contentType);
+
+        return $this;
+    }
+
+    public function contentLength(int $contentLength): self
+    {
+        $this->header('Content-Length', (string) $contentLength);
+
+        return $this;
+    }
+
+    public function etag(string $etag): self
+    {
+        $this->header('ETag', $etag);
+
+        return $this;
+    }
+
     /**
      * @param mixed[]|null $data
      */
     public function json(?array $data = null): self
     {
-        $this->header('Content-Type', 'application/json');
+        $this->contentType('application/json');
         $this->content($data !== null ? json_encode($data) : null);
 
         return $this;
@@ -50,7 +71,7 @@ final class MockResponseBuilder
 
     public function xml(?string $data = null): self
     {
-        $this->header('Content-Type', 'text/xml');
+        $this->contentType('text/xml');
         $this->content($data ?? null);
 
         return $this;
