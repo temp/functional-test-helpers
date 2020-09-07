@@ -1,0 +1,130 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
+
+use function array_key_exists;
+use function count;
+use function Safe\json_encode;
+use function Safe\sprintf;
+use function str_repeat;
+use function str_replace;
+use function strtolower;
+use function trim;
+use function ucwords;
+
+use const PHP_EOL;
+
+final class MockResponseBuilder
+{
+    /** @var mixed[] */
+    private array $headers = [];
+    private ?string $content = null;
+    private ?int $code = null;
+
+    public function content(?string $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function header(string $key, string $value): self
+    {
+        $this->headers[strtolower($key)] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param mixed[]|null $data
+     */
+    public function json(?array $data = null): self
+    {
+        $this->header('Content-Type', 'application/json');
+        $this->content($data !== null ? json_encode($data) : null);
+
+        return $this;
+    }
+
+    public function code(?int $code): self
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function hasHeaders(): bool
+    {
+        return count($this->headers) > 0;
+    }
+
+    public function getHeader(string $key): ?string
+    {
+        if ($this->hasHeader($key)) {
+            return $this->headers[strtolower($key)];
+        }
+
+        return null;
+    }
+
+    public function hasHeader(string $key): bool
+    {
+        return array_key_exists(strtolower($key), $this->headers);
+    }
+
+    public function getContent(): ?string
+    {
+        return $this->content;
+    }
+
+    public function hasContent(): bool
+    {
+        return $this->content !== null;
+    }
+
+    public function getCode(): ?int
+    {
+        return $this->code;
+    }
+
+    public function hasCode(): bool
+    {
+        return $this->code !== null;
+    }
+
+    public function __toString(): string
+    {
+        $string = '';
+
+        if ($this->hasCode()) {
+            $string .= sprintf('HTTP Code: %d', $this->getCode());
+        }
+
+        if ($this->hasHeaders()) {
+            foreach ($this->headers as $key => $value) {
+                $key = str_replace('-', ' ', $key);
+                $key = ucwords($key);
+                $key = str_replace(' ', '-', $key);
+
+                $string .= sprintf('%s%s: %s', PHP_EOL, $key, $value);
+            }
+        }
+
+        if ($this->hasContent()) {
+            $string .= ($string ? str_repeat(PHP_EOL, 2) : '');
+            $string .= $this->content;
+        }
+
+        return trim($string);
+    }
+}

@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Brainbits\FunctionalTestHelpers\HttpClientMock\Exception;
+
+use RuntimeException;
+
+use function Safe\sprintf;
+
+final class NoUriConfigured extends RuntimeException
+{
+    public static function fromTemplateKey(string $key): self
+    {
+        return new self(sprintf('No uri configured, can\'t replace template key {%s}', $key));
+    }
+}

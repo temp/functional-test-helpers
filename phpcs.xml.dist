@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<ruleset name="controlling">
+    <description>The controlling coding standard.</description>
+
+    <file>src</file>
+    <file>tests</file>
+
+    <!-- Start here -->
+    <arg name="basepath" value="."/>
+    <!-- Only .php -->
+    <arg name="extensions" value="php"/>
+    <!-- 80 parallel -->
+    <arg name="parallel" value="80"/>
+    <!-- User cache dir -->
+    <arg name="cache" value=".phpcs-cache"/>
+    <!-- Show colors -->
+    <arg name="colors"/>
+    <!-- Show progress -->
+    <arg value="p"/>
+    <!-- Show sniff names -->
+    <arg value="s"/>
+
+    <rule ref="BrainbitsCodingStandardTest">
+        <exclude name="SlevomatCodingStandard.Classes.ModernClassNameReference.ClassNameReferencedViaMagicConstant" />
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix" />
+    </rule>
+</ruleset>

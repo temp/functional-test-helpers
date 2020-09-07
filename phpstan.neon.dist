@@ -1,0 +1,29 @@
+parameters:
+    level: 1
+    paths:
+        - src
+        - tests
+    excludes_analyse:
+        - src/Kernel.php
+        - tests/bootstrap.php
+    ignoreErrors:
+        - '#Constructor in .* has parameter .* with default value#'
+        - '#Method .* has a nullable return type declaration#'
+        - '#Method .* has parameter .* with a nullable type declaration#'
+        - '#Method .* has parameter .* with null as default value#'
+        - '#Method Brainbits\\FunctionalTestHelpers\\Tests\\ZipContents\\ZipContentsTraitTest::.* is protected, but since the containing class is final, it can be private#'
+    ergebnis:
+        classesAllowedToBeExtended:
+            - Monolog\Handler\AbstractProcessingHandler
+            - RuntimeException
+
+includes:
+    - vendor/brainbits/phpstan-rules/rules.neon
+    - vendor/ergebnis/phpstan-rules/rules.neon
+    - vendor/jangregor/phpstan-prophecy/extension.neon
+    - vendor/slam/phpstan-extensions/conf/symfony-rules.neon
+    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
+    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
+    - vendor/phpstan/phpstan-phpunit/extension.neon
+    - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/phpstan/phpstan-symfony/extension.neon
