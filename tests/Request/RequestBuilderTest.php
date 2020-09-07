@@ -113,14 +113,6 @@ final class RequestBuilderTest extends TestCase
         $this->assertSame(['CONTENT_TYPE' => 'text/xml'], $builder->getServer());
     }
 
-    public function testXmlAcceptIsSet(): void
-    {
-        $builder = $this->createRequestBuilder('GET', '/users')
-            ->acceptXml();
-
-        $this->assertSame(['HTTP_ACCEPT' => 'text/xml'], $builder->getServer());
-    }
-
     public function testJsonContentTypeIsSet(): void
     {
         $builder = $this->createRequestBuilder('GET', '/users')
@@ -129,7 +121,31 @@ final class RequestBuilderTest extends TestCase
         $this->assertSame(['CONTENT_TYPE' => 'application/json'], $builder->getServer());
     }
 
-    public function testJsonAcceptIsSet(): void
+    public function testAcceptAllIsSet(): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->acceptAll();
+
+        $this->assertSame(['HTTP_ACCEPT' => '*/*'], $builder->getServer());
+    }
+
+    public function testAcceptImagesIsSet(): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->acceptImages();
+
+        $this->assertSame(['HTTP_ACCEPT' => 'image/*'], $builder->getServer());
+    }
+
+    public function testAcceptXmlIsSet(): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->acceptXml();
+
+        $this->assertSame(['HTTP_ACCEPT' => 'text/xml'], $builder->getServer());
+    }
+
+    public function testAcceptJsonIsSet(): void
     {
         $builder = $this->createRequestBuilder('GET', '/users')
             ->acceptJson();

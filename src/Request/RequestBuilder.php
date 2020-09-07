@@ -141,6 +141,20 @@ final class RequestBuilder
         return $this;
     }
 
+    public function acceptAll(): self
+    {
+        $this->accept('*/*');
+
+        return $this;
+    }
+
+    public function acceptImages(): self
+    {
+        $this->accept('image/*');
+
+        return $this;
+    }
+
     public function acceptJson(): self
     {
         $this->accept('application/json');
