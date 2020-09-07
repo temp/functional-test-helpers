@@ -46,6 +46,15 @@ final class RequestBuilderTest extends TestCase
         $this->assertSame('http://127.0.0.1/test/script.php', $builder->getUri());
     }
 
+    public function testUriIsSuffixed(): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/foo')
+            ->uriAppend('/bar')
+            ->uriAppend('/baz');
+
+        $this->assertSame('/foo/bar/baz', $builder->getUri());
+    }
+
     public function testUriParamIsReplacedInUri(): void
     {
         $builder = $this->createRequestBuilder('GET', '/users/{id}?expand={expand}')

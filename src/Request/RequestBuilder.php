@@ -53,6 +53,13 @@ final class RequestBuilder
         return new self($findUser, $createToken, $method, $uri);
     }
 
+    public function uriAppend(string $suffix): self
+    {
+        $this->uri .= $suffix;
+
+        return $this;
+    }
+
     /**
      * @param mixed $value
      */
