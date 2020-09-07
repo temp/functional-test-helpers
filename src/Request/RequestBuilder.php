@@ -58,7 +58,12 @@ final class RequestBuilder
      */
     public function uriParam(string $key, $value): self
     {
-        $this->uri = str_replace(sprintf('{%s}', $key), (string) $value, $this->uri);
+        $token = sprintf('{%s}', $key);
+        if (strpos($this->uri, $token) === false) {
+            throw InvalidRequest::invalidUriParam($token);
+        }
+
+        $this->uri = str_replace($token, (string) $value, $this->uri);
 
         return $this;
     }

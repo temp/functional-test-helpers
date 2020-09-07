@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brainbits\FunctionalTestHelpers\Tests\Request;
 
+use Brainbits\FunctionalTestHelpers\Request\InvalidRequest;
 use Brainbits\FunctionalTestHelpers\Request\RequestBuilder;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -52,6 +53,15 @@ final class RequestBuilderTest extends TestCase
             ->uriParam('expand', 'groups');
 
         $this->assertSame('/users/123?expand=groups', $builder->getUri());
+    }
+
+    public function testInvalidUriParamThrowsException(): void
+    {
+        $this->expectException(InvalidRequest::class);
+        $this->expectExceptionMessage('foo');
+
+        $this->createRequestBuilder('GET', '/users/{id}?expand={expand}')
+            ->uriParam('foo', 123);
     }
 
     public function testQueryParamsAreAddedToUri(): void
