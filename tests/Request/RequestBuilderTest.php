@@ -133,7 +133,7 @@ final class RequestBuilderTest extends TestCase
         $builder = $this->createRequestBuilder('GET', '/users')
             ->authToken('foo', ['bar', 'baz']);
 
-        $this->assertSame(['HTTP_AUTHORIZATION' => 'Bearer ["foo",["bar","baz"]]'], $builder->getServer());
+        $this->assertSame(['HTTP_AUTHORIZATION' => 'Bearer ["foo",["bar","baz"],[]]'], $builder->getServer());
     }
 
     public function testAuthorizationHeaderIsSetOnAuthLoginCall(): void
