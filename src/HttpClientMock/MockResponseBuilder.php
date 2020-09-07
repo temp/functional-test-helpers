@@ -48,6 +48,14 @@ final class MockResponseBuilder
         return $this;
     }
 
+    public function xml(?string $data = null): self
+    {
+        $this->header('Content-Type', 'text/xml');
+        $this->content($data ?? null);
+
+        return $this;
+    }
+
     public function code(?int $code): self
     {
         $this->code = $code;
