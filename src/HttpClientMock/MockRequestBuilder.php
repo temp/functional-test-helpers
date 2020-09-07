@@ -14,6 +14,7 @@ use function assert;
 use function count;
 use function explode;
 use function is_array;
+use function is_subclass_of;
 use function Safe\json_decode;
 use function Safe\json_encode;
 use function Safe\preg_match;
