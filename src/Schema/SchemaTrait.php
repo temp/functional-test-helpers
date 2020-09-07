@@ -65,7 +65,9 @@ trait SchemaTrait
             new EventManager(),
         );
 
-        return $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData);
+        $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData);
+
+        return $connection;
     }
 
     /**
