@@ -242,13 +242,13 @@ final class RequestBuilder
         return $this;
     }
 
-    public function fileByContent(string $key, string $content): self
+    public function fileByContent(string $key, string $content, string $filename): self
     {
         $filesystem = new Filesystem();
         $temporaryFilename = $filesystem->tempnam(sys_get_temp_dir(), 'upload_file_');
         $filesystem->dumpFile($temporaryFilename, $content);
 
-        $this->file($key, new UploadedFile($temporaryFilename, sprintf('%s.txt', $key)));
+        $this->file($key, new UploadedFile($temporaryFilename, $filename));
 
         return $this;
     }
