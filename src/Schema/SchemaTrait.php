@@ -73,7 +73,7 @@ trait SchemaTrait
     /**
      * @internal
      */
-    final private function applySchema(SchemaBuilder $schemaBuilder, Connection $connection): void
+    private function applySchema(SchemaBuilder $schemaBuilder, Connection $connection): void
     {
         foreach ($schemaBuilder->getSchema()->toSql($connection->getDatabasePlatform()) as $sql) {
             $connection->exec($sql);
@@ -83,7 +83,7 @@ trait SchemaTrait
     /**
      * @internal
      */
-    final private function applyData(DataBuilder $dataBuilder, Connection $connection): void
+    private function applyData(DataBuilder $dataBuilder, Connection $connection): void
     {
         foreach ($dataBuilder->getData() as $table => $rows) {
             foreach ($rows as $row) {
