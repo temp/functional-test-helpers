@@ -27,14 +27,15 @@ trait SchemaTrait
         Connection $connection,
         SchemaBuilder $schemaBuilder,
         DataBuilder $dataBuilder,
-        callable $buildData
+        callable $buildData,
+        bool $quoteDataTable = true
     ): Connection {
         trigger_error(
             'fixtureFromServiceConnection() is deprecated, use fixtureFromConnection()',
             E_USER_DEPRECATED,
         );
 
-        $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData);
+        $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData, $quoteDataTable);
 
         return $connection;
     }
@@ -55,7 +56,8 @@ trait SchemaTrait
     final protected function fixtureFromNewConnection(
         SchemaBuilder $schemaBuilder,
         DataBuilder $dataBuilder,
-        callable $buildData
+        callable $buildData,
+        bool $quoteDataTable = true
     ): Connection {
         $connection = DriverManager::getConnection(
             [
@@ -66,7 +68,7 @@ trait SchemaTrait
             new EventManager(),
         );
 
-        $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData);
+        $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData, $quoteDataTable);
 
         return $connection;
     }
