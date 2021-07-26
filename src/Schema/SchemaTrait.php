@@ -43,12 +43,13 @@ trait SchemaTrait
         Connection $connection,
         SchemaBuilder $schemaBuilder,
         DataBuilder $dataBuilder,
-        callable $buildData
+        callable $buildData,
+        bool $quoteDataTable = true
     ): void {
         $buildData($dataBuilder);
 
         $this->applySchema($schemaBuilder, $connection);
-        $this->applyData($dataBuilder, $connection);
+        $this->applyData($dataBuilder, $connection, $quoteDataTable);
     }
 
     final protected function fixtureFromNewConnection(
@@ -76,18 +77,18 @@ trait SchemaTrait
     private function applySchema(SchemaBuilder $schemaBuilder, Connection $connection): void
     {
         foreach ($schemaBuilder->getSchema()->toSql($connection->getDatabasePlatform()) as $sql) {
-            $connection->exec($sql);
+            $connection->executeStatement($sql);
         }
     }
 
     /**
      * @internal
      */
-    private function applyData(DataBuilder $dataBuilder, Connection $connection): void
+    private function applyData(DataBuilder $dataBuilder, Connection $connection, bool $quoteDataTable = true): void
     {
         foreach ($dataBuilder->getData() as $table => $rows) {
             foreach ($rows as $row) {
-                $connection->insert($connection->quoteIdentifier($table), $row);
+                $connection->insert($quoteDataTable ? $connection->quoteIdentifier($table) : $table, $row);
             }
         }
     }
