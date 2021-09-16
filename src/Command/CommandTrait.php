@@ -32,6 +32,11 @@ trait CommandTrait
         self::assertStringContainsString($needle, $commandTester->getDisplay());
     }
 
+    final protected static function assertCommandOutputNotContains(string $needle, CommandTester $commandTester): void
+    {
+        self::assertStringNotContainsString($needle, $commandTester->getDisplay());
+    }
+
     final protected static function assertCommandStatusCodeSame(int $expectedCode, CommandTester $commandTester): void
     {
         self::assertSame($expectedCode, $commandTester->getStatusCode());
