@@ -15,6 +15,7 @@
         "ergebnis/phpstan-rules": "^0.15.2",
         "jangregor/phpstan-prophecy": "^0.8.0",
         "monolog/monolog": "^2.1",
+        "php-coveralls/php-coveralls": "^2.4",
         "phpspec/prophecy-phpunit": "^2.0",
         "phpstan/phpstan": "^0.12.42",
         "phpstan/phpstan-phpunit": "^0.12.16",
