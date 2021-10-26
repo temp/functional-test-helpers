@@ -17,6 +17,9 @@ use function current;
 use function method_exists;
 use function Safe\json_encode;
 
+/**
+ * @covers \Brainbits\FunctionalTestHelpers\Request\RequestBuilder
+ */
 final class RequestBuilderTest extends TestCase
 {
     use ProphecyTrait;

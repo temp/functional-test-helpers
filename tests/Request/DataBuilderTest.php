@@ -8,7 +8,7 @@ use Brainbits\FunctionalTestHelpers\Request\DataBuilder;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Brainbits\FunctionalTestHelpers\Request
+ * @covers \Brainbits\FunctionalTestHelpers\Request\DataBuilder
  */
 final class DataBuilderTest extends TestCase
 {
