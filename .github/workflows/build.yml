@@ -20,6 +20,7 @@ jobs:
         php-version:
           - "7.4"
           - "8.0"
+          - "8.1"
 
     steps:
       - name: "Checkout"
@@ -55,5 +56,3 @@ jobs:
 
       - name: "Tests"
         run: "vendor/bin/phpunit"
-
-
