@@ -6,10 +6,14 @@ namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
 use IteratorAggregate;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Traversable;
 
 use function array_map;
 use function is_callable;
 
+/**
+ * @implements IteratorAggregate<MockRequestBuilder>
+ */
 final class MockRequestBuilderCollection implements IteratorAggregate
 {
     private MockRequestBuilderFactory $requestFactory;
@@ -62,9 +66,9 @@ final class MockRequestBuilderCollection implements IteratorAggregate
     }
 
     /**
-     * @return iterable|MockRequestBuilder[]
+     * @return Traversable<MockRequestBuilder>|MockRequestBuilder[]
      */
-    public function getIterator(): iterable
+    public function getIterator(): Traversable
     {
         yield from $this->requestBuilders;
     }

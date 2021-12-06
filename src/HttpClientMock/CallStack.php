@@ -6,6 +6,7 @@ namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
 use Countable;
 use IteratorAggregate;
+use Traversable;
 
 use function array_map;
 use function array_merge;
@@ -14,6 +15,9 @@ use function Safe\sprintf;
 
 use const PHP_EOL;
 
+/**
+ * @implements IteratorAggregate<MockRequestBuilder>
+ */
 final class CallStack implements Countable, IteratorAggregate
 {
     /** @var MockRequestBuilder[] */
@@ -51,9 +55,9 @@ final class CallStack implements Countable, IteratorAggregate
     }
 
     /**
-     * @return iterable<MockRequestBuilder>|MockRequestBuilder[]
+     * @return Traversable<MockRequestBuilder>|MockRequestBuilder[]
      */
-    public function getIterator(): iterable
+    public function getIterator(): Traversable
     {
         yield from $this->calls;
     }
