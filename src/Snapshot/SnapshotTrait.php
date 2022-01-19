@@ -44,6 +44,19 @@ trait SnapshotTrait
         $this->assertMatchesJsonSnapshot(json_encode($actual), $message);
     }
 
+    final protected function assertMatchesTextSnapshot(string $actual, string $message = ''): void
+    {
+        $fixtureFilename = $this->snapshotFilename('txt');
+
+        $this->snapshotDumpText($fixtureFilename, $actual);
+
+        self::assertStringEqualsFile(
+            $fixtureFilename,
+            $actual,
+            $this->snapshotAppendFilenameHint($fixtureFilename, $message)
+        );
+    }
+
     final protected function assertMatchesJsonSnapshot(string $actual, string $message = ''): void
     {
         self::assertJson($actual, $message);
@@ -137,7 +150,7 @@ trait SnapshotTrait
         return rtrim($noSpecialCharacters, '_');
     }
 
-    private function snapshotDumpJson(string $fixtureFilename, string $string): void
+    private function snapshotDumpText(string $fixtureFilename, string $string): void
     {
         $filesystem = new Filesystem();
 
@@ -146,7 +159,12 @@ trait SnapshotTrait
         }
 
         $filesystem->mkdir(dirname($fixtureFilename));
-        $filesystem->dumpFile(
+        $filesystem->dumpFile($fixtureFilename, $string);
+    }
+
+    private function snapshotDumpJson(string $fixtureFilename, string $string): void
+    {
+        $this->snapshotDumpText(
             $fixtureFilename,
             json_encode(
                 json_decode($string),
