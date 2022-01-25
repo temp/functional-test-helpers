@@ -184,9 +184,9 @@ final class RequestBuilder
     }
 
     /**
-     * @param mixed[] $additionalParams
+     * @param mixed ...$additionalParams
      */
-    public function authToken(string $userIdentifier, array ...$additionalParams): self
+    public function authToken(string $userIdentifier, ...$additionalParams): self
     {
         $token = ($this->createToken)($userIdentifier, ...$additionalParams);
 
