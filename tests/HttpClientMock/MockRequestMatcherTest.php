@@ -39,6 +39,46 @@ final class MockRequestMatcherTest extends TestCase
         self::assertMatchScoreIs(5, $match);
     }
 
+    public function testDetectUriWithString(): void
+    {
+        $this->requestBuilderA->uri('/host');
+        $this->requestBuilderB->uri('/host');
+
+        $match = ($this->matcher)($this->requestBuilderA, $this->requestBuilderB);
+
+        self::assertMatchScoreIs(20, $match);
+    }
+
+    public function testUriDoesNotMatchWithString(): void
+    {
+        $this->requestBuilderA->uri('/host');
+        $this->requestBuilderB->uri('/does-not-match');
+
+        $match = ($this->matcher)($this->requestBuilderA, $this->requestBuilderB);
+
+        self::assertMatchScoreIs(0, $match);
+    }
+
+    public function testDetectUriWithCallback(): void
+    {
+        $this->requestBuilderA->uri(static fn ($uri) => $uri === '/host');
+        $this->requestBuilderB->uri('/host');
+
+        $match = ($this->matcher)($this->requestBuilderA, $this->requestBuilderB);
+
+        self::assertMatchScoreIs(20, $match);
+    }
+
+    public function testUriDoesNotMatchWithCallback(): void
+    {
+        $this->requestBuilderA->uri(static fn ($uri) => $uri === '/host');
+        $this->requestBuilderB->uri('/does-not-match');
+
+        $match = ($this->matcher)($this->requestBuilderA, $this->requestBuilderB);
+
+        self::assertMatchScoreIs(0, $match);
+    }
+
     private static function assertMatchScoreIs(int $expected, MockRequestMatch $match): void
     {
         self::assertSame($expected, $match->getScore());

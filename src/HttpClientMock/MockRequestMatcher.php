@@ -6,6 +6,9 @@ namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
 use DOMDocument;
 
+use function is_callable;
+use function is_string;
+
 final class MockRequestMatcher
 {
     private Compare $compare;
@@ -25,8 +28,23 @@ final class MockRequestMatcher
             return MockRequestMatch::mismatchingMethod($expectation->getMethod(), $realRequest->getMethod());
         }
 
-        if ($expectation->getUri() !== null && $expectation->getUri() !== $realRequest->getUri()) {
-            return MockRequestMatch::mismatchingUri($expectation->getUri(), $realRequest->getUri());
+        if ($expectation->getUri() !== null) {
+            $expectedUri = $expectation->getUri();
+            $realUri = $realRequest->getUri();
+
+            if (is_callable($expectedUri) && !$expectedUri($realUri, $expectation->getUriParams())) {
+                return MockRequestMatch::mismatchingUri(
+                    self::uriAsString($expectedUri),
+                    self::uriAsString($realUri),
+                );
+            }
+
+            if (is_string($expectedUri) && $expectedUri !== $realUri) {
+                return MockRequestMatch::mismatchingUri(
+                    self::uriAsString($expectedUri),
+                    self::uriAsString($realUri),
+                );
+            }
         }
 
         // phpcs:disable Generic.Files.LineLength.TooLong
@@ -94,8 +112,19 @@ final class MockRequestMatcher
             $match->matchesMethod($expectation->getMethod());
         }
 
-        if ($expectation->getUri() !== null && $expectation->getUri() === $realRequest->getUri()) {
-            $match->matchesUri($expectation->getUri());
+        if ($expectation->getUri() !== null) {
+            $expectedUri = $expectation->getUri();
+            $realUri = $realRequest->getUri();
+
+            if (is_callable($expectedUri)) {
+                if ($expectedUri($realUri, $expectation->getUriParams())) {
+                    $match->matchesUri('<callable>');
+                }
+            } else {
+                if ($expectation->getUri() === $realRequest->getUri()) {
+                    $match->matchesUri($expectation->getUri());
+                }
+            }
         }
 
         if (
@@ -179,5 +208,14 @@ final class MockRequestMatcher
         }
 
         return ($this->compare)($expectation->getRequestParams(), $realRequest->getRequestParams());
+    }
+
+    private static function uriAsString(string|callable|null $uri): string // phpcs:ignore Generic.Files.LineLength.TooLong,SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing.NoSpaceBetweenTypeHintAndParameter
+    {
+        if (is_callable($uri)) {
+            return '<callable>';
+        }
+
+        return (string) $uri;
     }
 }

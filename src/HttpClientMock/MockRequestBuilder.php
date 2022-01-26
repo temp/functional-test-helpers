@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
 use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\InvalidMockRequest;
-use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\NoUriConfigured;
 use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\ResponseAlreadyConfigured;
 use DOMDocument;
 use Safe\Exceptions\JsonException;
@@ -14,12 +13,17 @@ use Symfony\Component\HttpFoundation\File\File;
 use Throwable;
 
 use function array_key_exists;
+use function array_keys;
+use function array_map;
+use function array_values;
 use function assert;
 use function base64_encode;
 use function count;
 use function error_reporting;
 use function explode;
 use function is_array;
+use function is_callable;
+use function is_string;
 use function is_subclass_of;
 use function libxml_get_errors;
 use function libxml_use_internal_errors;
@@ -43,7 +47,12 @@ use const PHP_EOL;
 final class MockRequestBuilder
 {
     private ?string $method = null;
-    private ?string $uri = null;
+
+    /** @var string|callable|null  */
+    private mixed $uri = null;
+
+    /** @var array<string,string>  */
+    private array $uriParams = [];
 
     /** @var mixed[] */
     private ?array $headers = null;
@@ -73,10 +82,16 @@ final class MockRequestBuilder
         return $this;
     }
 
-    public function uri(?string $uri): self
+    public function uri(string|callable|null $uri): self // phpcs:ignore Generic.Files.LineLength.TooLong,SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing.NoSpaceBetweenTypeHintAndParameter
     {
         if ($uri === null) {
             $this->uri = null;
+
+            return $this;
+        }
+
+        if (is_callable($uri)) {
+            $this->uri = $uri;
 
             return $this;
         }
@@ -315,11 +330,7 @@ final class MockRequestBuilder
      */
     public function uriParam(string $key, $value): self
     {
-        if ($this->uri === null) {
-            throw NoUriConfigured::fromTemplateKey($key);
-        }
-
-        $this->uri = str_replace(sprintf('{%s}', $key), (string) $value, $this->uri);
+        $this->uriParams[$key] = (string) $value;
 
         return $this;
     }
@@ -334,9 +345,26 @@ final class MockRequestBuilder
         return $this->uri !== null;
     }
 
-    public function getUri(): ?string
+    public function getUri(): string|callable|null
     {
+        if (is_string($this->uri)) {
+            return $this->replaceUriParams($this->uri, $this->uriParams);
+        }
+
         return $this->uri;
+    }
+
+    public function hasUriParams(): bool
+    {
+        return (bool) $this->uriParams;
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    public function getUriParams(): array
+    {
+        return $this->uriParams;
     }
 
     public function onMatch(callable $fn): self
@@ -421,7 +449,11 @@ final class MockRequestBuilder
         }
 
         if ($this->uri) {
-            $string .= $this->uri . ' ';
+            if (is_callable($this->uri)) {
+                $string .= '<callable> ';
+            } else {
+                $string .= $this->uri . ' ';
+            }
         }
 
         if ($this->headers) {
@@ -461,6 +493,18 @@ final class MockRequestBuilder
                $this->headers === null &&
                $this->content === null &&
                $this->multiparts === null;
+    }
+
+    /**
+     * @param array<string,string> $uriParams
+     */
+    private static function replaceUriParams(string $uri, array $uriParams): mixed
+    {
+        $keys = array_keys($uriParams);
+        $values = array_values($uriParams);
+        $placeholders = array_map(static fn ($key) => sprintf('{%s}', $key), $keys);
+
+        return str_replace($placeholders, $values, $uri);
     }
 
     private function applyEncodedQueryParams(string $encodedParams): void

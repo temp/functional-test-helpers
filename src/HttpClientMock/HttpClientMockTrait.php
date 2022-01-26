@@ -23,7 +23,7 @@ trait HttpClientMockTrait
         $logger->pushHandler($this->mockRequestLogHandler = new NoMatchingMockRequestHandler());
     }
 
-    protected function mockRequest(?string $method = null, ?string $uri = null): MockRequestBuilder
+    protected function mockRequest(?string $method = null, string|callable|null $uri = null): MockRequestBuilder // phpcs:ignore Generic.Files.LineLength.TooLong,SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing.NoSpaceBetweenTypeHintAndParameter
     {
         if (!self::getContainer()) {
             static::fail(sprintf(
