@@ -9,6 +9,7 @@ parameters:
     ignoreErrors:
         - '#Class DateTimeImmutable is unsafe to use#'
         - '#Constructor in .* has parameter .* with default value#'
+        - '#Function mb_convert_encoding is unsafe to use#' # remove after updating to thecodingmachine/safe >= 2.0
         - '#Method .* has a nullable return type declaration#'
         - '#Method .* has parameter .* with a nullable type declaration#'
         - '#Method .* has parameter .* with null as default value#'
