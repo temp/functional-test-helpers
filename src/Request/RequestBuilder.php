@@ -183,6 +183,13 @@ final class RequestBuilder
         return $this;
     }
 
+    public function auth(string $authorization): self
+    {
+        $this->server('HTTP_AUTHORIZATION', $authorization);
+
+        return $this;
+    }
+
     /**
      * @param mixed ...$additionalParams
      */
