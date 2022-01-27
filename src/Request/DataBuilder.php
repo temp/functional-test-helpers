@@ -36,10 +36,7 @@ final class DataBuilder
         return $this->data;
     }
 
-    /**
-     * @param string|int ...$path
-     */
-    public function without(...$path): self
+    public function without(string|int ...$path): self
     {
         if (count($path) === 0) {
             return $this;
@@ -57,11 +54,7 @@ final class DataBuilder
         return $this;
     }
 
-    /**
-     * @param mixed      $newValue
-     * @param string|int ...$path
-     */
-    public function with($newValue, ...$path): self
+    public function with(mixed $newValue, string|int ...$path): self
     {
         if (count($path) === 0) {
             return $this;
@@ -79,11 +72,7 @@ final class DataBuilder
         return $this;
     }
 
-    /**
-     * @param mixed      $newValue
-     * @param string|int ...$path
-     */
-    public function add($newValue, ...$path): self
+    public function add(mixed $newValue, string|int ...$path): self
     {
         $dataToModify = &$this->data;
         foreach ($path as $index) {

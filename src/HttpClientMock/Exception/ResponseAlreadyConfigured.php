@@ -8,7 +8,6 @@ use Brainbits\FunctionalTestHelpers\HttpClientMock\MockResponseBuilder;
 use RuntimeException;
 use Throwable;
 
-use function get_class;
 use function Safe\sprintf;
 
 use const PHP_EOL;
@@ -23,7 +22,7 @@ final class ResponseAlreadyConfigured extends RuntimeException
     public static function withAnException(Throwable $exception): self
     {
         return new self(
-            sprintf('An exception is already configured: %s (%s)', get_class($exception), $exception->getMessage())
+            sprintf('An exception is already configured: %s (%s)', $exception::class, $exception->getMessage())
         );
     }
 }

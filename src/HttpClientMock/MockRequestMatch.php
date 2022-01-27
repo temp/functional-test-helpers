@@ -153,11 +153,7 @@ final class MockRequestMatch
         );
     }
 
-    /**
-     * @param mixed $value
-     * @param mixed $otherValue
-     */
-    public static function mismatchingHeader(string $key, $value, $otherValue): self
+    public static function mismatchingHeader(string $key, mixed $value, mixed $otherValue): self
     {
         return new self(
             0,

@@ -12,7 +12,7 @@
         "ext-iconv": "*",
         "ext-mbstring": "*",
         "ext-simplexml": "*",
-        "brainbits/phpcs-standard": "^4.0",
+        "brainbits/phpcs-standard": "^5.0",
         "brainbits/phpstan-rules": "^3.0",
         "doctrine/dbal": "^2.11",
         "doctrine/event-manager": "^1.1",

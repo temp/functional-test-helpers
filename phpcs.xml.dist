@@ -20,7 +20,7 @@
     <!-- Show sniff names -->
     <arg value="s"/>
 
-    <rule ref="BrainbitsCodingStandardTest">
+    <rule ref="Brainbits">
         <exclude name="SlevomatCodingStandard.Classes.ModernClassNameReference.ClassNameReferencedViaMagicConstant" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming.SuperfluousSuffix" />
     </rule>

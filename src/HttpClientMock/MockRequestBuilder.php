@@ -137,10 +137,7 @@ final class MockRequestBuilder
         return array_key_exists($key, $this->headers);
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHeader(string $key)
+    public function getHeader(string $key): mixed
     {
         return $this->headers[strtolower($key)] ?? null;
     }
@@ -325,10 +322,7 @@ final class MockRequestBuilder
         return is_array($this->multiparts) && count($this->multiparts) > 0;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function uriParam(string $key, $value): self
+    public function uriParam(string $key, mixed $value): self
     {
         $this->uriParams[$key] = (string) $value;
 

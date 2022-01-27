@@ -60,10 +60,7 @@ final class RequestBuilder
         return $this;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function uriParam(string $key, $value): self
+    public function uriParam(string $key, mixed $value): self
     {
         $token = sprintf('{%s}', $key);
         if (strpos($this->uri, $token) === false) {
@@ -75,20 +72,14 @@ final class RequestBuilder
         return $this;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function queryParam(string $key, $value): self
+    public function queryParam(string $key, mixed $value): self
     {
         $this->uri .= sprintf('%s%s=%s', strpos($this->uri, '?') !== false ? '&' : '?', $key, $value);
 
         return $this;
     }
 
-    /**
-     * @param mixed $value
-     */
-    public function parameter(string $key, $value): self
+    public function parameter(string $key, mixed $value): self
     {
         $this->parameters[$key] = $value;
 
@@ -190,10 +181,7 @@ final class RequestBuilder
         return $this;
     }
 
-    /**
-     * @param mixed ...$additionalParams
-     */
-    public function authToken(string $userIdentifier, ...$additionalParams): self
+    public function authToken(string $userIdentifier, mixed ...$additionalParams): self
     {
         $token = ($this->createToken)($userIdentifier, ...$additionalParams);
 
@@ -202,10 +190,7 @@ final class RequestBuilder
         return $this;
     }
 
-    /**
-     * @param mixed $userId
-     */
-    public function authLogin($userId, KernelBrowser $client): self
+    public function authLogin(mixed $userId, KernelBrowser $client): self
     {
         $user = ($this->findUser)($userId);
 

@@ -10,11 +10,7 @@ use function is_numeric;
 
 final class Compare
 {
-    /**
-     * @param mixed $actual
-     * @param mixed $expected
-     */
-    public function __invoke($actual, $expected): bool
+    public function __invoke(mixed $actual, mixed $expected): bool
     {
         if (!is_array($expected) || !is_array($actual)) {
             return $actual === $expected;

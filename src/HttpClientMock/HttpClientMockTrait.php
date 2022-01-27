@@ -376,13 +376,10 @@ trait HttpClientMockTrait
         }
     }
 
-    /**
-     * @param mixed ...$values
-     */
     protected static function mockRequestMessage(
         string $userMessage,
         string $messageTemplate,
-        ...$values
+        mixed ...$values
     ): string {
         $message = sprintf($messageTemplate, ...$values);
 
