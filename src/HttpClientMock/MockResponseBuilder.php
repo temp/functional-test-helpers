@@ -6,6 +6,7 @@ namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
 use function array_key_exists;
 use function count;
+use function Safe\json_decode;
 use function Safe\json_encode;
 use function Safe\sprintf;
 use function str_repeat;
@@ -119,6 +120,18 @@ final class MockResponseBuilder
     public function hasContent(): bool
     {
         return $this->content !== null;
+    }
+
+    /**
+     * @return mixed[]|null
+     */
+    public function getJson(): ?array
+    {
+        if ($this->content === null) {
+            return null;
+        }
+
+        return json_decode($this->content, true);
     }
 
     public function getCode(): ?int
