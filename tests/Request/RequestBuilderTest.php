@@ -173,6 +173,14 @@ final class RequestBuilderTest extends TestCase
         $this->assertSame(['HTTP_AUTHORIZATION' => 'Bearer ["foo",["bar","baz"]]'], $builder->getServer());
     }
 
+    public function testAuthenticationHeadersAreSetOnAuthBasicCall(): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->authBasic('user', 'password');
+
+        $this->assertSame(['PHP_AUTH_USER' => 'user', 'PHP_AUTH_PW' => 'password'], $builder->getServer());
+    }
+
     public function testAuthorizationHeaderIsSetOnAuthLoginCall(): void
     {
         $user = new InMemoryUser('foo', 'bar');

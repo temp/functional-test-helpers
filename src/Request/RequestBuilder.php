@@ -199,6 +199,14 @@ final class RequestBuilder
         return $this;
     }
 
+    public function authBasic(string $user, string $password): self
+    {
+        $this->server('PHP_AUTH_USER', $user);
+        $this->server('PHP_AUTH_PW', $password);
+
+        return $this;
+    }
+
     public function userAgent(string $userAgent): self
     {
         $this->server('HTTP_USER_AGENT', $userAgent);
