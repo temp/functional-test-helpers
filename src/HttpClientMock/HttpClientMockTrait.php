@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
+use ArrayObject;
 use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\NoMatchingMockRequest;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
