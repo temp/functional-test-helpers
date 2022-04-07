@@ -8,7 +8,7 @@ use RuntimeException;
 
 use function Safe\sprintf;
 
-final class InvalidMockRequest extends RuntimeException
+final class InvalidMockRequest extends RuntimeException implements HttpClientMockException
 {
     public static function notXml(string $input): self
     {

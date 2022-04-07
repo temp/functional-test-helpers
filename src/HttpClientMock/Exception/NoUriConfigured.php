@@ -8,7 +8,7 @@ use RuntimeException;
 
 use function Safe\sprintf;
 
-final class NoUriConfigured extends RuntimeException
+final class NoUriConfigured extends RuntimeException implements HttpClientMockException
 {
     public static function fromTemplateKey(string $key): self
     {

@@ -133,7 +133,7 @@ final class MockRequestBuilderTest extends TestCase
     public function testEmptyResponsesThrowsException(): void
     {
         $this->expectException(NoResponseMock::class);
-        $this->expectExceptionMessage('No response configured');
+        $this->expectExceptionMessage('No response configured for:');
 
         $mockRequestBuilder = (new MockRequestBuilder());
 
@@ -143,7 +143,7 @@ final class MockRequestBuilderTest extends TestCase
     public function testNoNextResponseThrowsException(): void
     {
         $this->expectException(NoResponseMock::class);
-        $this->expectExceptionMessage('All responses have already been processed');
+        $this->expectExceptionMessage('All responses have already been processed for:');
 
         $mockRequestBuilder = (new MockRequestBuilder())
             ->willRespond(new MockResponseBuilder());
@@ -155,7 +155,7 @@ final class MockRequestBuilderTest extends TestCase
     public function testAddAfterAddAlwaysThrowsException(): void
     {
         $this->expectException(AddMockResponseFailed::class);
-        $this->expectExceptionMessage('Single response already added, add not possible');
+        $this->expectExceptionMessage('Single response already added, add not possible for:');
 
         $mockRequestBuilder = (new MockRequestBuilder())
             ->willAlwaysRespond(new MockResponseBuilder())
@@ -165,7 +165,7 @@ final class MockRequestBuilderTest extends TestCase
     public function testAddAlwaysAfterAddThrowsException(): void
     {
         $this->expectException(AddMockResponseFailed::class);
-        $this->expectExceptionMessage('Response already added, add always not possible');
+        $this->expectExceptionMessage('Response already added, add always not possible for:');
 
         $mockRequestBuilder = (new MockRequestBuilder())
             ->willRespond(new MockResponseBuilder())

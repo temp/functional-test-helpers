@@ -6,7 +6,7 @@ namespace Brainbits\FunctionalTestHelpers\HttpClientMock\Exception;
 
 use RuntimeException;
 
-final class UnprocessableBody extends RuntimeException
+final class UnprocessableBody extends RuntimeException implements HttpClientMockException
 {
     public static function create(): self
     {

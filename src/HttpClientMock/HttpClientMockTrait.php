@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
 use ArrayObject;
-use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\NoMatchingMockRequest;
+use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\HttpClientMockException;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Event\ConsoleErrorEvent;
@@ -35,11 +35,11 @@ trait HttpClientMockTrait
             }
 
             $exception = $record['context']['exception'];
-            while (!($exception instanceof NoMatchingMockRequest) && $exception->getPrevious()) {
+            while (!($exception instanceof HttpClientMockException) && $exception->getPrevious()) {
                 $exception = $exception->getPrevious();
             }
 
-            if (!($exception instanceof NoMatchingMockRequest)) {
+            if (!($exception instanceof HttpClientMockException)) {
                 return;
             }
 
@@ -52,11 +52,11 @@ trait HttpClientMockTrait
 
         $eventDispatcher->addListener('kernel.exception', static function (ExceptionEvent $event) use ($storage): void {
             $exception = $event->getThrowable();
-            while (!($exception instanceof NoMatchingMockRequest) && $exception->getPrevious()) {
+            while (!($exception instanceof HttpClientMockException) && $exception->getPrevious()) {
                 $exception = $exception->getPrevious();
             }
 
-            if (!($exception instanceof NoMatchingMockRequest)) {
+            if (!($exception instanceof HttpClientMockException)) {
                 return;
             }
 
@@ -65,11 +65,11 @@ trait HttpClientMockTrait
 
         $eventDispatcher->addListener('console.error', static function (ConsoleErrorEvent $event) use ($storage): void {
             $exception = $event->getError();
-            while (!($exception instanceof NoMatchingMockRequest) && $exception->getPrevious()) {
+            while (!($exception instanceof HttpClientMockException) && $exception->getPrevious()) {
                 $exception = $exception->getPrevious();
             }
 
-            if (!($exception instanceof NoMatchingMockRequest)) {
+            if (!($exception instanceof HttpClientMockException)) {
                 return;
             }
 
@@ -79,7 +79,7 @@ trait HttpClientMockTrait
         $eventDispatcher->addListener(
             'kernel.terminate',
             static function (TerminateEvent $event) use ($storage): void {
-                if (!($storage['exception'] ?? false) || !$storage['exception'] instanceof NoMatchingMockRequest) {
+                if (!($storage['exception'] ?? false) || !$storage['exception'] instanceof HttpClientMockException) {
                     return;
                 }
 
@@ -91,7 +91,7 @@ trait HttpClientMockTrait
         $eventDispatcher->addListener(
             'console.terminate',
             static function (ConsoleTerminateEvent $event) use ($storage): void {
-                if (!($storage['exception'] ?? false) || !$storage['exception'] instanceof NoMatchingMockRequest) {
+                if (!($storage['exception'] ?? false) || !$storage['exception'] instanceof HttpClientMockException) {
                     return;
                 }
 

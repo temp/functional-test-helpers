@@ -12,7 +12,7 @@ use function Safe\sprintf;
 
 use const PHP_EOL;
 
-final class NoMatchingMockRequest extends RuntimeException
+final class NoMatchingMockRequest extends RuntimeException implements HttpClientMockException
 {
     /**
      * @param MockRequestMatch[] $matches

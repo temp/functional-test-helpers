@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Brainbits\FunctionalTestHelpers\HttpClientMock;
 
+use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\AddMockResponseFailed;
 use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\InvalidMockRequest;
+use Brainbits\FunctionalTestHelpers\HttpClientMock\Exception\NoResponseMock;
 use DOMDocument;
 use Safe\Exceptions\JsonException;
 use SimpleXMLElement;
@@ -370,28 +372,44 @@ final class MockRequestBuilder
 
     public function willAlwaysRespond(MockResponseBuilder $responseBuilder): self
     {
-        $this->responses->addAlways($responseBuilder);
+        try {
+            $this->responses->addAlways($responseBuilder);
+        } catch (AddMockResponseFailed $e) {
+            throw AddMockResponseFailed::withRequest($e, $this);
+        }
 
         return $this;
     }
 
     public function willAlwaysThrow(Throwable $exception): self
     {
-        $this->responses->addAlways($exception);
+        try {
+            $this->responses->addAlways($exception);
+        } catch (AddMockResponseFailed $e) {
+            throw AddMockResponseFailed::withRequest($e, $this);
+        }
 
         return $this;
     }
 
     public function willRespond(MockResponseBuilder $responseBuilder): self
     {
-        $this->responses->add($responseBuilder);
+        try {
+            $this->responses->add($responseBuilder);
+        } catch (AddMockResponseFailed $e) {
+            throw AddMockResponseFailed::withRequest($e, $this);
+        }
 
         return $this;
     }
 
     public function willThrow(Throwable $exception): self
     {
-        $this->responses->add($exception);
+        try {
+            $this->responses->add($exception);
+        } catch (AddMockResponseFailed $e) {
+            throw AddMockResponseFailed::withRequest($e, $this);
+        }
 
         return $this;
     }
@@ -403,7 +421,11 @@ final class MockRequestBuilder
 
     public function nextResponse(): null|MockResponseBuilder|Throwable
     {
-        return $this->responses->next();
+        try {
+            return $this->responses->next();
+        } catch (NoResponseMock $e) {
+            throw NoResponseMock::withRequest($e, $this);
+        }
     }
 
     public function resetResponses(): self
