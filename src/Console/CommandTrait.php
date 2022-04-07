@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Brainbits\FunctionalTestHelpers\Command;
+namespace Brainbits\FunctionalTestHelpers\Console;
 
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
