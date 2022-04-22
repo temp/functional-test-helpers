@@ -24,7 +24,7 @@ trait ApplicationTrait
         $application->setCatchExceptions(false);
 
         $applicationTester = new ApplicationTester($application);
-        $applicationTester->run($input);
+        $applicationTester->run($input, $options);
 
         return $applicationTester;
     }
