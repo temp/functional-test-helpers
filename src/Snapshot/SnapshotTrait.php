@@ -7,6 +7,7 @@ namespace Brainbits\FunctionalTestHelpers\Snapshot;
 use DOMDocument;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
+use tidy;
 
 use function dirname;
 use function getenv;
@@ -48,7 +49,7 @@ trait SnapshotTrait
     {
         $fixtureFilename = $this->snapshotFilename('txt');
 
-        $this->snapshotDumpText($fixtureFilename, $actual);
+        $this->snapshotDump($fixtureFilename, $actual);
 
         self::assertStringEqualsFile(
             $fixtureFilename,
@@ -62,8 +63,9 @@ trait SnapshotTrait
         self::assertJson($actual, $message);
 
         $fixtureFilename = $this->snapshotFilename('json');
+        $actual = $this->snapshotFormatJson($actual);
 
-        $this->snapshotDumpJson($fixtureFilename, $actual);
+        $this->snapshotDump($fixtureFilename, $actual);
 
         self::assertJsonStringEqualsJsonFile(
             $fixtureFilename,
@@ -75,10 +77,25 @@ trait SnapshotTrait
     final protected function assertMatchesXmlSnapshot(string $actual, string $message = ''): void
     {
         $fixtureFilename = $this->snapshotFilename('xml');
+        $actual = $this->snapshotFormatXml($actual);
 
-        $this->snapshotDumpXml($fixtureFilename, $actual);
+        $this->snapshotDump($fixtureFilename, $actual);
 
         self::assertXmlStringEqualsXmlFile(
+            $fixtureFilename,
+            $actual,
+            $this->snapshotAppendFilenameHint($fixtureFilename, $message)
+        );
+    }
+
+    final protected function assertMatchesHtmlSnapshot(string $actual, string $message = ''): void
+    {
+        $fixtureFilename = $this->snapshotFilename('html');
+        $actual = $this->snapshotFormatHtml($actual);
+
+        $this->snapshotDump($fixtureFilename, $actual);
+
+        self::assertStringEqualsFile(
             $fixtureFilename,
             $actual,
             $this->snapshotAppendFilenameHint($fixtureFilename, $message)
@@ -150,7 +167,33 @@ trait SnapshotTrait
         return rtrim($noSpecialCharacters, '_');
     }
 
-    private function snapshotDumpText(string $fixtureFilename, string $string): void
+    private function snapshotFormatJson(string $string): string
+    {
+        return json_encode(
+            json_decode($string),
+            JSON_UNESCAPED_SLASHES |
+            JSON_UNESCAPED_LINE_TERMINATORS |
+            JSON_UNESCAPED_UNICODE |
+            JSON_PRETTY_PRINT
+        );
+    }
+
+    private function snapshotFormatXml(string $string): string
+    {
+        $dom = new DOMDocument();
+        $dom->preserveWhiteSpace = false;
+        $dom->loadXML($string);
+        $dom->formatOutput = true;
+
+        return (string) $dom->saveXML();
+    }
+
+    private function snapshotFormatHtml(string $string): string
+    {
+        return (new tidy())->repairString($string, ['indent' => true, 'indent-spaces' => 4, 'wrap' => 999999]);
+    }
+
+    private function snapshotDump(string $fixtureFilename, string $string): void
     {
         $filesystem = new Filesystem();
 
@@ -160,37 +203,6 @@ trait SnapshotTrait
 
         $filesystem->mkdir(dirname($fixtureFilename));
         $filesystem->dumpFile($fixtureFilename, $string);
-    }
-
-    private function snapshotDumpJson(string $fixtureFilename, string $string): void
-    {
-        $this->snapshotDumpText(
-            $fixtureFilename,
-            json_encode(
-                json_decode($string),
-                JSON_UNESCAPED_SLASHES |
-                JSON_UNESCAPED_LINE_TERMINATORS |
-                JSON_UNESCAPED_UNICODE |
-                JSON_PRETTY_PRINT
-            )
-        );
-    }
-
-    private function snapshotDumpXml(string $fixtureFilename, string $string): void
-    {
-        $filesystem = new Filesystem();
-
-        if (!getenv('UPDATE_SNAPSHOTS') && $filesystem->exists($fixtureFilename)) {
-            return;
-        }
-
-        $filesystem->mkdir(dirname($fixtureFilename));
-
-        $dom = new DOMDocument();
-        $dom->loadXML($string);
-        $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = true;
-        $dom->save($fixtureFilename);
     }
 
     private function snapshotAppendFilenameHint(string $fixtureFilename, string $message): string
