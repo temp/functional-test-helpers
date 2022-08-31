@@ -21,4 +21,9 @@ final class InvalidRequest extends RuntimeException
     {
         return new self(sprintf('Uri param token %s not found', $token));
     }
+
+    public static function invalidFile(): self
+    {
+        return new self('Parameter 2 of file() needs to be either an array of UploadedFiles, or a single UploadedFile');
+    }
 }

@@ -223,13 +223,60 @@ final class RequestBuilderTest extends TestCase
         $this->assertSame([], $builder->getFiles());
     }
 
-    public function testFilesCanBeSet(): void
+    public function testSingleFileCanBeSet(): void
     {
         $builder = $this->createRequestBuilder('GET', '/users')
-            ->file('file', new UploadedFile(__FILE__, 'test.jpg'));
+            ->file('single', new UploadedFile(__FILE__, 'test.jpg'));
 
-        $this->assertArrayHasKey('file', $builder->getFiles());
+        $this->assertArrayHasKey('single', $builder->getFiles());
         $this->assertContainsOnlyInstancesOf(UploadedFile::class, $builder->getFiles());
+    }
+
+    public function testMultipleFilesCanBeSet(): void
+    {
+        $files = [
+            new UploadedFile(__FILE__, 'test1.jpg'),
+            new UploadedFile(__FILE__, 'test2.jpg'),
+        ];
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->file('multiple', $files);
+
+        $this->assertArrayHasKey('multiple', $builder->getFiles());
+        $this->assertContainsOnlyInstancesOf(UploadedFile::class, $builder->getFiles()['multiple']);
+    }
+
+    public function testMultipleNestedFilesCanBeSet(): void
+    {
+        $files = [
+            'foo' => [
+                'bar' => [
+                    'baz' => [
+                        new UploadedFile(__FILE__, 'test1.jpg'),
+                        new UploadedFile(__FILE__, 'test2.jpg'),
+                    ],
+                ],
+            ],
+        ];
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->file('nested', $files);
+
+        $this->assertArrayHasKey('nested', $builder->getFiles());
+        $this->assertArrayHasKey('foo', $builder->getFiles()['nested']);
+        $this->assertArrayHasKey('bar', $builder->getFiles()['nested']['foo']);
+        $this->assertArrayHasKey('baz', $builder->getFiles()['nested']['foo']['bar']);
+        $this->assertContainsOnlyInstancesOf(UploadedFile::class, $builder->getFiles()['nested']['foo']['bar']['baz']);
+    }
+
+    public function testInvalidFilesThrowsException(): void
+    {
+        $this->expectException(InvalidRequest::class);
+        $this->expectExceptionMessage(
+            'Parameter 2 of file() needs to be either an array of UploadedFiles, or a single UploadedFile',
+        );
+
+        $files = ['foo' => 'bar'];
+        $this->createRequestBuilder('GET', '/users')
+            ->file('invalid', $files);
     }
 
     public function testFilesCanBeSetByPath(): void

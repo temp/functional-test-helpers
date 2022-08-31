@@ -9,6 +9,8 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use function basename;
+use function is_array;
+use function Safe\array_walk_recursive;
 use function Safe\json_encode;
 use function Safe\sprintf;
 use function str_replace;
@@ -228,11 +230,24 @@ final class RequestBuilder
         return $this;
     }
 
-    public function file(string $key, UploadedFile $file): self
+    /**
+     * @param UploadedFile|UploadedFile[] $files
+     */
+    public function file(string $key, UploadedFile|array $files): self
     {
         $this->server('CONTENT_TYPE', 'multipart/form-data');
 
-        $this->files[$key] = $file;
+        if (is_array($files)) {
+            array_walk_recursive($files, static function ($file): void {
+                if ($file instanceof UploadedFile) {
+                    return;
+                }
+
+                throw InvalidRequest::invalidFile();
+            });
+        }
+
+        $this->files[$key] = $files;
 
         return $this;
     }
