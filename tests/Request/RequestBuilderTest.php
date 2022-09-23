@@ -61,11 +61,19 @@ final class RequestBuilderTest extends TestCase
 
     public function testUriParamIsReplacedInUri(): void
     {
-        $builder = $this->createRequestBuilder('GET', '/users/{id}?expand={expand}')
+        $builder = $this->createRequestBuilder('GET', '/users/{id}/expand/{expand}')
             ->uriParam('id', 123)
             ->uriParam('expand', 'groups');
 
-        $this->assertSame('/users/123?expand=groups', $builder->getUri());
+        $this->assertSame('/users/123/expand/groups', $builder->getUri());
+    }
+
+    public function testUriParamIsEncodedInUri(): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/users/{expand}')
+            ->uriParam('expand', 'with space');
+
+        $this->assertSame('/users/with%20space', $builder->getUri());
     }
 
     public function testInvalidUriParamThrowsException(): void
@@ -73,7 +81,7 @@ final class RequestBuilderTest extends TestCase
         $this->expectException(InvalidRequest::class);
         $this->expectExceptionMessage('foo');
 
-        $this->createRequestBuilder('GET', '/users/{id}?expand={expand}')
+        $this->createRequestBuilder('GET', '/users/{id}/expand/{expand}')
             ->uriParam('foo', 123);
     }
 
@@ -84,6 +92,14 @@ final class RequestBuilderTest extends TestCase
             ->queryParam('offset', 10);
 
         $this->assertSame('/users?limit=100&offset=10', $builder->getUri());
+    }
+
+    public function testQueryParamsAreEncodedInUri(): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->queryParam('with space', 'with space');
+
+        $this->assertSame('/users?with+space=with+space', $builder->getUri());
     }
 
     public function testParameterValuesAreReturned(): void

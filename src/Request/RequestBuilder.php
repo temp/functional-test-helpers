@@ -10,12 +10,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 use function basename;
 use function is_array;
+use function rawurlencode;
 use function Safe\array_walk_recursive;
 use function Safe\json_encode;
 use function Safe\sprintf;
 use function str_replace;
 use function strpos;
 use function sys_get_temp_dir;
+use function urlencode;
 
 final class RequestBuilder
 {
@@ -64,18 +66,24 @@ final class RequestBuilder
 
     public function uriParam(string $key, mixed $value): self
     {
+        $key = rawurlencode($key);
+        $value = rawurlencode((string) $value);
+
         $token = sprintf('{%s}', $key);
         if (strpos($this->uri, $token) === false) {
             throw InvalidRequest::invalidUriParam($token);
         }
 
-        $this->uri = str_replace($token, (string) $value, $this->uri);
+        $this->uri = str_replace($token, $value, $this->uri);
 
         return $this;
     }
 
     public function queryParam(string $key, mixed $value): self
     {
+        $key = urlencode($key);
+        $value = urlencode((string) $value);
+
         $this->uri .= sprintf('%s%s=%s', strpos($this->uri, '?') !== false ? '&' : '?', $key, $value);
 
         return $this;
