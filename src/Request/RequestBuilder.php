@@ -110,10 +110,7 @@ final class RequestBuilder
         return $this;
     }
 
-    /**
-     * @param mixed[] $data
-     */
-    public function json(?array $data = null): self
+    public function json(mixed $data = null): self
     {
         $this->contentType('application/json');
 

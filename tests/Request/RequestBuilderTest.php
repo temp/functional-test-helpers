@@ -141,6 +141,31 @@ final class RequestBuilderTest extends TestCase
         $this->assertSame(['CONTENT_TYPE' => 'application/json'], $builder->getServer());
     }
 
+    /**
+     * @dataProvider provideJsonData
+     */
+    public function testJsonDataIsSet(mixed $data, string|null $encoded): void
+    {
+        $builder = $this->createRequestBuilder('GET', '/users')
+            ->json($data);
+
+        $this->assertSame($encoded, $builder->getContent());
+    }
+
+    /**
+     * @return array<string, array{mixed, string|null}>
+     */
+    public function provideJsonData(): array
+    {
+        return [
+            'null' => [null, null], // data is skipped
+            'int' => [1, '1'],
+            'float' => [1.1, '1.1'],
+            'string' => ['text', '"text"'],
+            'nested' => [['string' => 'text', 'int' => 1, 'float' => 1.1], '{"string":"text","int":1,"float":1.1}'],
+        ];
+    }
+
     public function testAcceptAllIsSet(): void
     {
         $builder = $this->createRequestBuilder('GET', '/users')
