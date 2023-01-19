@@ -48,11 +48,14 @@ final class MockRequestBuilderFactory
     }
 
     /**
-     * @param mixed[]|string|null $body
-     * @param mixed[]             $headers
+     * @param mixed[]|string|callable|null $body
+     * @param mixed[]                      $headers
      */
-    private function processBody(MockRequestBuilder $mockRequestBuilder, array|string|null $body, array $headers): void
-    {
+    private function processBody(
+        MockRequestBuilder $mockRequestBuilder,
+        array|string|callable|null $body,
+        array $headers,
+    ): void {
         $contentType = (string) $mockRequestBuilder->getHeader('Content-Type');
 
         // application/json; charset=utf-8
