@@ -6,5 +6,6 @@
     ],
     "branches": [
         "main"
-    ]
+    ],
+    tagFormat: '${version}',
 }
