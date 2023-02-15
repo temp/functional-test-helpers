@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Brainbits\FunctionalTestHelpers\Request;
 
-use PHPUnit\Framework\Attributes\After;
-use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,13 +26,13 @@ trait RequestTrait
         return static fn () => null;
     }
 
-    #[Before]
+    /** @before */
     protected function setUpRequest(): void
     {
         self::$requestClient = static::createClient();
     }
 
-    #[After]
+    /** @after */
     protected function tearDownRequest(): void
     {
         self::$requestClient = null;
