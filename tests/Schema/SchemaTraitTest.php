@@ -24,6 +24,9 @@ final class SchemaTraitTest extends TestCase
 
         $connection = $this->createMock(Connection::class);
         $connection->expects($this->once())
+            ->method('getParams')
+            ->willReturn(['driver' => 'pdo_sqlite', 'memory' => true]);
+        $connection->expects($this->once())
             ->method('getDatabasePlatform')
             ->willReturn(new SqlitePlatform());
         $connection->expects($this->once())
@@ -73,6 +76,9 @@ final class SchemaTraitTest extends TestCase
 
         $connection = $this->createMock(Connection::class);
         $connection->expects($this->once())
+            ->method('getParams')
+            ->willReturn(['driver' => 'pdo_sqlite', 'memory' => true]);
+        $connection->expects($this->once())
             ->method('getDatabasePlatform')
             ->willReturn(new SqlitePlatform());
         $connection->expects($this->once())
@@ -102,6 +108,9 @@ final class SchemaTraitTest extends TestCase
         $dataBuilder = $this->createDataBuilder($schemaBuilder);
 
         $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('getParams')
+            ->willReturn(['driver' => 'pdo_sqlite', 'memory' => true]);
         $connection->expects($this->once())
             ->method('getDatabasePlatform')
             ->willReturn(new SqlitePlatform());

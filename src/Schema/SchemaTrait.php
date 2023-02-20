@@ -50,9 +50,9 @@ trait SchemaTrait
     /** @internal */
     private function applySchema(SchemaBuilder $schemaBuilder, Connection $connection): void
     {
-        foreach ($schemaBuilder->getSchema()->toSql($connection->getDatabasePlatform()) as $sql) {
-            $connection->executeStatement($sql);
-        }
+        $applySchema = (new CreateApplySchema())($connection);
+
+        $applySchema($schemaBuilder, $connection);
     }
 
     /** @internal */
