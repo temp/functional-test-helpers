@@ -12,6 +12,8 @@ use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Schema;
 use PHPUnit\Framework\TestCase;
 
+use function sprintf;
+
 /** @covers \Brainbits\FunctionalTestHelpers\Schema\SchemaTrait */
 final class SchemaTraitTest extends TestCase
 {
@@ -42,13 +44,12 @@ final class SchemaTraitTest extends TestCase
         $dataBuilder->foo('baz');
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())
+        $connection->expects($this->any())
             ->method('quoteIdentifier')
-            ->with('foo')
-            ->willReturn('#foo#');
+            ->willReturnCallback(static fn ($identifier) => sprintf('#%s#', $identifier));
         $connection->expects($this->once())
             ->method('insert')
-            ->with('#foo#', ['bar' => 'baz']);
+            ->with('#foo#', ['#bar#' => 'baz']);
 
         $this->applyData($dataBuilder, $connection);
     }
@@ -60,8 +61,7 @@ final class SchemaTraitTest extends TestCase
 
         $connection = $this->createMock(Connection::class);
         $connection->expects($this->never())
-            ->method('quoteIdentifier')
-            ->with('foo');
+            ->method('quoteIdentifier');
         $connection->expects($this->once())
             ->method('insert')
             ->with('foo', ['bar' => 'baz']);
@@ -84,13 +84,12 @@ final class SchemaTraitTest extends TestCase
         $connection->expects($this->once())
             ->method('executeStatement')
             ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
-        $connection->expects($this->once())
+        $connection->expects($this->any())
             ->method('quoteIdentifier')
-            ->with('foo')
-            ->willReturn('#foo#');
+            ->willReturnCallback(static fn ($identifier) => sprintf('#%s#', $identifier));
         $connection->expects($this->once())
             ->method('insert')
-            ->with('#foo#', ['bar' => 'baz']);
+            ->with('#foo#', ['#bar#' => 'baz']);
 
         $this->fixtureFromConnection(
             $connection,

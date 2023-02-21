@@ -23,6 +23,10 @@ final class CreateApplySchema
             return new SqliteFileBasedApplySchema();
         }
 
+        if ($this->isMysql($params)) {
+            return new MysqlBasedApplySchema();
+        }
+
         throw NoApplySchemaStrategyFound::forConnectionParameters($params);
     }
 
@@ -45,5 +49,13 @@ final class CreateApplySchema
         $path = (string) ($params['path'] ?? '');
 
         return $path !== '' && (str_contains($url, 'sqlite:') || str_ends_with($driver, 'sqlite'));
+    }
+
+    /** @param mixed[] $params */
+    private function isMysql(array $params): bool
+    {
+        $driver = (string) ($params['driver'] ?? '');
+
+        return str_ends_with($driver, 'mysql');
     }
 }

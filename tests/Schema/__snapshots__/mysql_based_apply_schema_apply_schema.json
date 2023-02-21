@@ -1,0 +1,9 @@
+[
+    {
+        "query": "SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'",
+        "result": []
+    },
+    {
+        "statement": "CREATE TABLE foo (bar VARCHAR(255) NOT NULL) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB"
+    }
+]

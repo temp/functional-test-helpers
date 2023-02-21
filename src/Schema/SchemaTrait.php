@@ -59,9 +59,31 @@ trait SchemaTrait
     private function applyData(DataBuilder $dataBuilder, Connection $connection, bool $quoteDataTable = true): void
     {
         foreach ($dataBuilder->getData() as $table => $rows) {
+            $table = $quoteDataTable ? $connection->quoteIdentifier($table) : $table;
+
             foreach ($rows as $row) {
-                $connection->insert($quoteDataTable ? $connection->quoteIdentifier($table) : $table, $row);
+                $row = $quoteDataTable ? $this->quoteKeys($connection, $row) : $row;
+
+                $connection->insert($table, $row);
             }
         }
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, mixed>
+     *
+     * @interal
+     */
+    private function quoteKeys(Connection $connection, mixed $row): array
+    {
+        $quotedRow = [];
+
+        foreach ($row as $key => $value) {
+            $quotedRow[$connection->quoteIdentifier($key)] = $value;
+        }
+
+        return $quotedRow;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brainbits\FunctionalTestHelpers\Tests\Schema;
 
 use Brainbits\FunctionalTestHelpers\Schema\CreateApplySchema;
+use Brainbits\FunctionalTestHelpers\Schema\MysqlBasedApplySchema;
 use Brainbits\FunctionalTestHelpers\Schema\NoApplySchemaStrategyFound;
 use Brainbits\FunctionalTestHelpers\Schema\SqliteFileBasedApplySchema;
 use Brainbits\FunctionalTestHelpers\Schema\SqliteMemoryBasedApplySchema;
@@ -60,6 +61,18 @@ final class CreateApplySchemaTest extends TestCase
         $applySchema = (new CreateApplySchema())($connection);
 
         $this->assertInstanceOf(SqliteFileBasedApplySchema::class, $applySchema);
+    }
+
+    public function testItUsesSqliteStrategyIfDriverIsSelected(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->once())
+            ->method('getParams')
+            ->willReturn(['driver' => 'pdo_mysql']);
+
+        $applySchema = (new CreateApplySchema())($connection);
+
+        $this->assertInstanceOf(MysqlBasedApplySchema::class, $applySchema);
     }
 
     public function testItThrowsException(): void
