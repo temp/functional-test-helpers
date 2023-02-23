@@ -37,7 +37,13 @@ use const PHP_EOL;
 trait SnapshotTrait
 {
     /** @var array<string,int> */
-    private array $filenames = [];
+    private array $filenames;
+
+    /** @before */
+    final protected function setUpSnapshot(): void
+    {
+        $this->filenames = [];
+    }
 
     /** @param mixed[] $actual */
     final protected function assertMatchesArraySnapshot(array $actual, string $message = ''): void
