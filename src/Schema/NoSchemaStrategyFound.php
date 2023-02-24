@@ -7,9 +7,9 @@ namespace Brainbits\FunctionalTestHelpers\Schema;
 use RuntimeException;
 
 use function Safe\json_encode;
-use function sprintf;
+use function Safe\sprintf;
 
-final class NoApplySchemaStrategyFound extends RuntimeException
+final class NoSchemaStrategyFound extends RuntimeException
 {
     /** @param mixed[] $connectionParameters */
     public static function forConnectionParameters(array $connectionParameters): self

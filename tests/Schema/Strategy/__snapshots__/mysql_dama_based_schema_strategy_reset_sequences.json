@@ -1,0 +1,16 @@
+[
+    {
+        "query": "SELECT `TABLE_NAME` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = :table AND `AUTO_INCREMENT` > 1",
+        "parameters": {
+            "table": "database_name"
+        },
+        "result": [
+            {
+                "TABLE_NAME": "foo"
+            }
+        ]
+    },
+    {
+        "statement": "ALTER TABLE `foo` AUTO_INCREMENT = 1"
+    }
+]

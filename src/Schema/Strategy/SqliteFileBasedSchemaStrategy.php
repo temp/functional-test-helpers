@@ -2,10 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Brainbits\FunctionalTestHelpers\Schema;
+namespace Brainbits\FunctionalTestHelpers\Schema\Strategy;
 
 use ArrayObject;
+use Brainbits\FunctionalTestHelpers\Schema\DataBuilder;
+use Brainbits\FunctionalTestHelpers\Schema\SchemaBuilder;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Identifier;
 
 use function assert;
 use function count;
@@ -16,7 +19,7 @@ use function Safe\copy;
 use function Safe\mkdir;
 use function Safe\unlink;
 
-final class SqliteFileBasedApplySchema implements ApplySchema
+final class SqliteFileBasedSchemaStrategy implements SchemaStrategy
 {
     public static ArrayObject $executedStatements;
 
@@ -29,7 +32,15 @@ final class SqliteFileBasedApplySchema implements ApplySchema
         self::$executedStatements ??= new ArrayObject();
     }
 
-    public function __invoke(SchemaBuilder $schemaBuilder, Connection $connection): void
+    public function deleteData(Connection $connection): void
+    {
+    }
+
+    public function resetSequences(Connection $connection): void
+    {
+    }
+
+    public function applySchema(SchemaBuilder $schemaBuilder, Connection $connection): void
     {
         $params = $connection->getParams();
 
@@ -75,6 +86,19 @@ final class SqliteFileBasedApplySchema implements ApplySchema
         }
     }
 
+    public function applyData(DataBuilder $dataBuilder, Connection $connection): void
+    {
+        foreach ($dataBuilder->getData() as $table => $rows) {
+            $table = $this->quoteIdentifier($connection, $table);
+
+            foreach ($rows as $row) {
+                $row = $this->quoteKeys($connection, $row);
+
+                $connection->insert($table, $row);
+            }
+        }
+    }
+
     private function applyMissingSchema(SchemaBuilder $schemaBuilder, Connection $connection): bool
     {
         $databaseChanged = false;
@@ -89,5 +113,28 @@ final class SqliteFileBasedApplySchema implements ApplySchema
         }
 
         return $databaseChanged;
+    }
+
+    private function quoteIdentifier(Connection $connection, string $identifier): string
+    {
+        return (new Identifier($identifier, true))->getQuotedName($connection->getDatabasePlatform());
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     *
+     * @return array<string, mixed>
+     *
+     * @interal
+     */
+    private function quoteKeys(Connection $connection, mixed $row): array
+    {
+        $quotedRow = [];
+
+        foreach ($row as $key => $value) {
+            $quotedRow[$this->quoteIdentifier($connection, $key)] = $value;
+        }
+
+        return $quotedRow;
     }
 }

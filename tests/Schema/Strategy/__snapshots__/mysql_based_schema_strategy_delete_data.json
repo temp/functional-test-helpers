@@ -1,0 +1,22 @@
+[
+    {
+        "query": "SELECT `TABLE_NAME` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = :table AND `TABLE_ROWS` > 0",
+        "parameters": {
+            "table": "database_name"
+        },
+        "result": [
+            {
+                "TABLE_NAME": "foo"
+            }
+        ]
+    },
+    {
+        "statement": "SET foreign_key_checks = 0"
+    },
+    {
+        "statement": "DELETE FROM `foo`"
+    },
+    {
+        "statement": "SET foreign_key_checks = 1"
+    }
+]

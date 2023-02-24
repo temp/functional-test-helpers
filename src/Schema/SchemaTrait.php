@@ -9,6 +9,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit\Framework\TestCase;
 
+use function getenv;
+
 // phpcs:disable SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
 
 /** @mixin TestCase */
@@ -19,19 +21,24 @@ trait SchemaTrait
         SchemaBuilder $schemaBuilder,
         DataBuilder $dataBuilder,
         callable $buildData,
-        bool $quoteDataTable = true,
     ): void {
         $buildData($dataBuilder);
 
-        $this->applySchema($schemaBuilder, $connection);
-        $this->applyData($dataBuilder, $connection, $quoteDataTable);
+        $schemaStrategy = (new CreateSchemaStrategy())($connection);
+
+        if (!getenv('USE_PRE_INITIALIZED_SCHEMA')) {
+            $schemaStrategy->applySchema($schemaBuilder, $connection);
+        }
+
+        $schemaStrategy->deleteData($connection);
+        $schemaStrategy->resetSequences($connection);
+        $schemaStrategy->applyData($dataBuilder, $connection);
     }
 
     final protected function fixtureFromNewConnection( // @phpstan-ignore-line
         SchemaBuilder $schemaBuilder,
         DataBuilder $dataBuilder,
         callable $buildData,
-        bool $quoteDataTable = true,
     ): Connection {
         $connection = DriverManager::getConnection(
             [
@@ -42,48 +49,8 @@ trait SchemaTrait
             new EventManager(),
         );
 
-        $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData, $quoteDataTable);
+        $this->fixtureFromConnection($connection, $schemaBuilder, $dataBuilder, $buildData);
 
         return $connection;
-    }
-
-    /** @internal */
-    private function applySchema(SchemaBuilder $schemaBuilder, Connection $connection): void
-    {
-        $applySchema = (new CreateApplySchema())($connection);
-
-        $applySchema($schemaBuilder, $connection);
-    }
-
-    /** @internal */
-    private function applyData(DataBuilder $dataBuilder, Connection $connection, bool $quoteDataTable = true): void
-    {
-        foreach ($dataBuilder->getData() as $table => $rows) {
-            $table = $quoteDataTable ? $connection->quoteIdentifier($table) : $table;
-
-            foreach ($rows as $row) {
-                $row = $quoteDataTable ? $this->quoteKeys($connection, $row) : $row;
-
-                $connection->insert($table, $row);
-            }
-        }
-    }
-
-    /**
-     * @param array<string, mixed> $row
-     *
-     * @return array<string, mixed>
-     *
-     * @interal
-     */
-    private function quoteKeys(Connection $connection, mixed $row): array
-    {
-        $quotedRow = [];
-
-        foreach ($row as $key => $value) {
-            $quotedRow[$connection->quoteIdentifier($key)] = $value;
-        }
-
-        return $quotedRow;
     }
 }

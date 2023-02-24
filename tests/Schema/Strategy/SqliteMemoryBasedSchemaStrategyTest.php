@@ -2,18 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Brainbits\FunctionalTestHelpers\Tests\Schema;
+namespace Brainbits\FunctionalTestHelpers\Tests\Schema\Strategy;
 
 use Brainbits\FunctionalTestHelpers\Schema\SchemaBuilder;
-use Brainbits\FunctionalTestHelpers\Schema\SqliteMemoryBasedApplySchema;
+use Brainbits\FunctionalTestHelpers\Schema\Strategy\SqliteMemoryBasedSchemaStrategy;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Schema;
 use PHPUnit\Framework\TestCase;
 
-/** @covers \Brainbits\FunctionalTestHelpers\Schema\SqliteMemoryBasedApplySchema */
-final class SqliteMemoryBasedApplySchemaTest extends TestCase
+/** @covers \Brainbits\FunctionalTestHelpers\Schema\Strategy\SqliteMemoryBasedSchemaStrategy */
+final class SqliteMemoryBasedSchemaStrategyTest extends TestCase
 {
+    private SqlitePlatform $platform;
+
+    protected function setUp(): void
+    {
+        $this->platform = new SqlitePlatform();
+    }
+
     public function testApplySchema(): void
     {
         $schemaBuilder = $this->createSchemaBuilder();
@@ -27,8 +34,8 @@ final class SqliteMemoryBasedApplySchemaTest extends TestCase
             ->method('executeStatement')
             ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
 
-        $applySchema = new SqliteMemoryBasedApplySchema();
-        $applySchema($schemaBuilder, $connection);
+        $strategy = new SqliteMemoryBasedSchemaStrategy();
+        $strategy->applySchema($schemaBuilder, $connection);
     }
 
     private function createSchemaBuilder(): SchemaBuilder

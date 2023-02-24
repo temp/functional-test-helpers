@@ -12,61 +12,25 @@ use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Schema;
 use PHPUnit\Framework\TestCase;
 
-use function sprintf;
+use function getenv;
+use function Safe\putenv;
+use function Safe\sprintf;
 
 /** @covers \Brainbits\FunctionalTestHelpers\Schema\SchemaTrait */
 final class SchemaTraitTest extends TestCase
 {
     use SchemaTrait;
 
-    public function testApplySchema(): void
+    private string $oldEnvUsePreInitializedSchema;
+
+    protected function setUp(): void
     {
-        $schemaBuilder = $this->createSchemaBuilder();
-        $schemaBuilder->foo();
-
-        $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())
-            ->method('getParams')
-            ->willReturn(['driver' => 'pdo_sqlite', 'memory' => true]);
-        $connection->expects($this->once())
-            ->method('getDatabasePlatform')
-            ->willReturn(new SqlitePlatform());
-        $connection->expects($this->once())
-            ->method('executeStatement')
-            ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
-
-        $this->applySchema($schemaBuilder, $connection);
+        $this->oldEnvUsePreInitializedSchema = (string) getenv('USE_PRE_INITIALIZED_SCHEMA');
     }
 
-    public function testApplyDataWithQuoteTableName(): void
+    protected function tearDown(): void
     {
-        $dataBuilder = $this->createDataBuilder();
-        $dataBuilder->foo('baz');
-
-        $connection = $this->createMock(Connection::class);
-        $connection->expects($this->any())
-            ->method('quoteIdentifier')
-            ->willReturnCallback(static fn ($identifier) => sprintf('#%s#', $identifier));
-        $connection->expects($this->once())
-            ->method('insert')
-            ->with('#foo#', ['#bar#' => 'baz']);
-
-        $this->applyData($dataBuilder, $connection);
-    }
-
-    public function testApplyDataWithoutQuoteTableName(): void
-    {
-        $dataBuilder = $this->createDataBuilder();
-        $dataBuilder->foo('baz');
-
-        $connection = $this->createMock(Connection::class);
-        $connection->expects($this->never())
-            ->method('quoteIdentifier');
-        $connection->expects($this->once())
-            ->method('insert')
-            ->with('foo', ['bar' => 'baz']);
-
-        $this->applyData($dataBuilder, $connection, false);
+        putenv(sprintf('USE_PRE_INITIALIZED_SCHEMA=%s', $this->oldEnvUsePreInitializedSchema));
     }
 
     public function testFixtureFromConnectionWithTableNameQuote(): void
@@ -75,21 +39,18 @@ final class SchemaTraitTest extends TestCase
         $dataBuilder = $this->createDataBuilder($schemaBuilder);
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())
+        $connection->expects($this->any())
             ->method('getParams')
             ->willReturn(['driver' => 'pdo_sqlite', 'memory' => true]);
-        $connection->expects($this->once())
+        $connection->expects($this->any())
             ->method('getDatabasePlatform')
             ->willReturn(new SqlitePlatform());
         $connection->expects($this->once())
             ->method('executeStatement')
             ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
-        $connection->expects($this->any())
-            ->method('quoteIdentifier')
-            ->willReturnCallback(static fn ($identifier) => sprintf('#%s#', $identifier));
         $connection->expects($this->once())
             ->method('insert')
-            ->with('#foo#', ['#bar#' => 'baz']);
+            ->with('"foo"', ['"bar"' => 'baz']);
 
         $this->fixtureFromConnection(
             $connection,
@@ -101,24 +62,25 @@ final class SchemaTraitTest extends TestCase
         );
     }
 
-    public function testFixtureFromConnectionWithoutTableNameQuote(): void
+    public function testFixtureFromConnectionWithPreInitializedSchema(): void
     {
+        putenv('USE_PRE_INITIALIZED_SCHEMA=1');
+
         $schemaBuilder = $this->createSchemaBuilder();
         $dataBuilder = $this->createDataBuilder($schemaBuilder);
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->once())
+        $connection->expects($this->any())
             ->method('getParams')
             ->willReturn(['driver' => 'pdo_sqlite', 'memory' => true]);
-        $connection->expects($this->once())
+        $connection->expects($this->any())
             ->method('getDatabasePlatform')
             ->willReturn(new SqlitePlatform());
-        $connection->expects($this->once())
-            ->method('executeStatement')
-            ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
+        $connection->expects($this->never())
+            ->method('executeStatement');
         $connection->expects($this->once())
             ->method('insert')
-            ->with('foo', ['bar' => 'baz']);
+            ->with('"foo"', ['"bar"' => 'baz']);
 
         $this->fixtureFromConnection(
             $connection,
@@ -127,7 +89,6 @@ final class SchemaTraitTest extends TestCase
             static function ($dataBuilder): void {
                 $dataBuilder->foo('baz');
             },
-            false,
         );
     }
 

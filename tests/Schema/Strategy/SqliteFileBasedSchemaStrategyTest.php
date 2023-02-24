@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Brainbits\FunctionalTestHelpers\Tests\Schema;
+namespace Brainbits\FunctionalTestHelpers\Tests\Schema\Strategy;
 
 use Brainbits\FunctionalTestHelpers\Schema\SchemaBuilder;
-use Brainbits\FunctionalTestHelpers\Schema\SqliteFileBasedApplySchema;
+use Brainbits\FunctionalTestHelpers\Schema\Strategy\SqliteFileBasedSchemaStrategy;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Schema\Schema;
@@ -20,14 +20,18 @@ use function sys_get_temp_dir;
 
 use const FILE_APPEND;
 
-/** @covers \Brainbits\FunctionalTestHelpers\Schema\SqliteFileBasedApplySchema */
-final class SqliteFileBasedApplySchemaTest extends TestCase
+/** @covers \Brainbits\FunctionalTestHelpers\Schema\Strategy\SqliteFileBasedSchemaStrategy */
+final class SqliteFileBasedSchemaStrategyTest extends TestCase
 {
     private string|null $databasePath = null;
     private string|null $cachePath = null;
 
+    private SqlitePlatform $platform;
+
     protected function setUp(): void
     {
+        $this->platform = new SqlitePlatform();
+
         $this->databasePath = tempnam(sys_get_temp_dir(), 'SqliteFileBasedApplySchemaTest_') . '.db';
         $this->cachePath = $this->databasePath . '.cache';
     }
@@ -61,8 +65,8 @@ final class SqliteFileBasedApplySchemaTest extends TestCase
             ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)')
             ->willReturnCallback(fn () => file_put_contents($this->databasePath, func_get_arg(0), FILE_APPEND));
 
-        $applySchema = new SqliteFileBasedApplySchema(resetExecutedStatements: true);
-        $applySchema($schemaBuilder, $connection);
+        $strategy = new SqliteFileBasedSchemaStrategy(resetExecutedStatements: true);
+        $strategy->applySchema($schemaBuilder, $connection);
 
         $this->assertStringEqualsFile($this->databasePath, 'CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
         $this->assertFileEquals($this->databasePath, $this->cachePath);
@@ -87,8 +91,8 @@ final class SqliteFileBasedApplySchemaTest extends TestCase
             ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)')
             ->willReturnCallback(fn () => file_put_contents($this->databasePath, func_get_arg(0), FILE_APPEND));
 
-        $applySchema = new SqliteFileBasedApplySchema(resetExecutedStatements: true);
-        $applySchema($schemaBuilder, $connection);
+        $strategy = new SqliteFileBasedSchemaStrategy(resetExecutedStatements: true);
+        $strategy->applySchema($schemaBuilder, $connection);
 
         $this->assertStringEqualsFile($this->databasePath, 'CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
         $this->assertFileEquals($this->databasePath, $this->cachePath);
@@ -111,10 +115,10 @@ final class SqliteFileBasedApplySchemaTest extends TestCase
             ->with('CREATE TABLE foo (bar VARCHAR(255) NOT NULL)')
             ->willReturnCallback(fn () => file_put_contents($this->databasePath, func_get_arg(0), FILE_APPEND));
 
-        $applySchema = new SqliteFileBasedApplySchema(resetExecutedStatements: true);
-        $applySchema($schemaBuilder, $connection);
-        $applySchema = new SqliteFileBasedApplySchema(resetExecutedStatements: false);
-        $applySchema($schemaBuilder, $connection);
+        $strategy = new SqliteFileBasedSchemaStrategy(resetExecutedStatements: true);
+        $strategy->applySchema($schemaBuilder, $connection);
+        $strategy = new SqliteFileBasedSchemaStrategy(resetExecutedStatements: false);
+        $strategy->applySchema($schemaBuilder, $connection);
 
         $this->assertStringEqualsFile($this->databasePath, 'CREATE TABLE foo (bar VARCHAR(255) NOT NULL)');
         $this->assertFileEquals($this->databasePath, $this->cachePath);
