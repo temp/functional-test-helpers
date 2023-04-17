@@ -6,7 +6,7 @@ namespace Brainbits\FunctionalTestHelpers\Request;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;
-use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
