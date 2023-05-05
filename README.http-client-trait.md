@@ -31,14 +31,22 @@ In your test, you can provide mock responses, which will be matched by the given
 ```php
 // MyTest.php
 
-public function testRequest(): void
-{
-    $this->mockRequest('GET', 'http://127.0.0.1/my/endpoint')
-        ->willRespond($this->mockResponse()->json([]));
-    
-    // ...
+use Brainbits\FunctionalTestHelpers\HttpClientMock\HttpClientMockTrait;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-    Assert::assertNotEmpty($this->callStack()->first);
+final class MyTest extends WebTestCase
+{
+    use HttpClientMockTrait;
+
+    public function testRequest(): void
+    {
+        $this->mockRequest('GET', 'http://127.0.0.1/my/endpoint')
+            ->willRespond($this->mockResponse()->json([]));
+    
+        // ...
+
+        Assert::assertNotEmpty($this->callStack()->first);
+    }
 }
 
 ```
