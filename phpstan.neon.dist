@@ -29,11 +29,11 @@ parameters:
             - RuntimeException
 
 includes:
-    - vendor/brainbits/phpstan-rules/rules.neon
-    - vendor/ergebnis/phpstan-rules/rules.neon
-    - vendor/jangregor/phpstan-prophecy/extension.neon
-    - vendor/phpstan/phpstan-phpunit/extension.neon
-    - vendor/phpstan/phpstan-phpunit/rules.neon
-    - vendor/phpstan/phpstan-symfony/extension.neon
-    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
-    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
+    - %rootDir%/../../brainbits/phpstan-rules/rules.neon
+    - %rootDir%/../../ergebnis/phpstan-rules/rules.neon
+    - %rootDir%/../../jangregor/phpstan-prophecy/extension.neon
+    - %rootDir%/../../phpstan/phpstan-phpunit/extension.neon
+    - %rootDir%/../../phpstan/phpstan-phpunit/rules.neon
+    - %rootDir%/../../phpstan/phpstan-symfony/extension.neon
+    - %rootDir%/../../thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
+    - %rootDir%/../../thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
