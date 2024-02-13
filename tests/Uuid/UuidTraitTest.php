@@ -97,7 +97,7 @@ final class UuidTraitTest extends TestCase
             self::fail('Expected ExpectationFailedException exception was not thrown');
         } catch (ExpectationFailedException $e) {
             self::assertSame(
-                'Failed asserting that \'foo\' is valid JSON (Syntax error, malformed JSON).',
+                'Failed asserting that a string is valid JSON (Syntax error, malformed JSON).',
                 $e->getMessage(),
             );
         } catch (Throwable) {
