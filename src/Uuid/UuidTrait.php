@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brainbits\FunctionalTestHelpers\Uuid;
 
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\NilUuid;
 use Symfony\Component\Uid\Uuid;
@@ -21,7 +22,7 @@ trait UuidTrait
 {
     private int $lastUuidValue;
 
-    /** @before */
+    #[Before]
     final protected function setUpUuidTrait(): void
     {
         $this->lastUuidValue = 0;
