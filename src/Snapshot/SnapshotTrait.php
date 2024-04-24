@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brainbits\FunctionalTestHelpers\Snapshot;
 
 use DOMDocument;
+use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use tidy;
@@ -40,7 +41,7 @@ trait SnapshotTrait
     /** @var array<string,int> */
     private array $filenames;
 
-    /** @before */
+    #[Before]
     final protected function setUpSnapshot(): void
     {
         $this->filenames = [];
